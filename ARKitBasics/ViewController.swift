@@ -46,6 +46,23 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Pause the view's session
         sceneView.session.pause()
     }
+    //MY STUFF
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let results = sceneView.hitTest(touch.location(in: sceneView), types: [ARHitTestResult.ResultType.featurePoint])
+        guard let hitFeature = results.last else { return }
+        let hitTransform = SCNMatrix4FromMat4(hitFeature.worldTransform)
+        let hitPosition = SCNVector3Make(hitTransform.m41,
+                                         hitTransform.m42,
+                                         hitTransform.m43)
+        createBall(hitPosition: hitPosition)
+    }
+    func createBall(hitPosition : SCNVector3) {
+        let newBall = SCNSphere(radius: 0.01)
+        let newBallNode = SCNNode(geometry: newBall)
+        newBallNode.position = hitPosition
+        self.sceneView.scene.rootNode.addChildNode(newBallNode)
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
